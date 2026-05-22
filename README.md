@@ -295,6 +295,4 @@ If you like this project:
 </div>
 =======
 </div>
->>>>>>> 7b5f6abb12cf4c73828fcd9b2226a153cd652cc2
-=======
->>>>>>> d8e78bdd98dc954288dbb8ade367b149ece5d8bd
+
