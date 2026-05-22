@@ -1,5 +1,4 @@
 
-<<<<<<< HEAD
 <div align="center">
 
 # 👁️ Face Recognition + AI Analysis
@@ -291,8 +290,6 @@ If you like this project:
 
 ### Made with ❤️ using Python, Flask & OpenCV
 
-<<<<<<< HEAD
 </div>
-=======
 </div>
 
