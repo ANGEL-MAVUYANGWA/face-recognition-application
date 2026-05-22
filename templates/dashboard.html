@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Face Recognition App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: #f0f2f5;
+        }
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .history-item {
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .history-item:hover {
+            background: #f8f9fa;
+        }
+        .btn-analyze {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+        }
+        .btn-analyze:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-md-2 sidebar p-0">
+                <div class="p-3 text-center">
+                    <i class="fas fa-brain fa-2x mb-2"></i>
+                    <h5>FaceRecog AI</h5>
+                    <small>Welcome, {{ current_user.username }}</small>
+                </div>
+                <hr class="bg-light">
+                <nav class="nav flex-column px-3">
+                    <a class="nav-link active" href="/dashboard">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="/analyze">
+                        <i class="fas fa-image me-2"></i> Analyze Image
+                    </a>
+                    <a class="nav-link" href="/logout">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>
+                        <i class="fas fa-tachometer-alt me-2" style="color: #667eea;"></i>
+                        My Dashboard
+                    </h2>
+                    <a href="/analyze" class="btn btn-analyze">
+                        <i class="fas fa-upload me-2"></i>New Analysis
+                    </a>
+                </div>
+                
+                <!-- Statistics Row -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-chart-line fa-2x mb-2" style="color: #667eea;"></i>
+                            <h3>{{ history|length }}</h3>
+                            <p class="text-muted mb-0">Total Analyses</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-clock fa-2x mb-2" style="color: #667eea;"></i>
+                            <h3>Ready</h3>
+                            <p class="text-muted mb-0">Upload an image to start</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-shield-alt fa-2x mb-2" style="color: #667eea;"></i>
+                            <h3>Secure</h3>
+                            <p class="text-muted mb-0">Your data is private</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent History Section -->
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history me-2" style="color: #667eea;"></i>
+                            Recent Analysis History
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if history %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Preview</th>
+                                            <th>Date & Time</th>
+                                            <th>Faces Found</th>
+                                            <th>Image Quality</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in history %}
+                                        <tr class="history-item">
+                                            <td>
+                                                <img src="/static/uploads/{{ item.image_path }}" 
+                                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;">
+                                            </td>
+                                            <td>{{ item.created_at }}</td>
+                                            <td>
+                                                {% set result = item.analysis_result|tojson %}
+                                                {% set parsed = item.analysis_result|tojson %}
+                                                Loading...
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">View to see quality</span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewAnalysis('{{ item.id }}')">
+                                                    <i class="fas fa-eye me-1"></i>View Details
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-images fa-3x mb-3" style="color: #ccc;"></i>
+                                <h5>No analyses yet</h5>
+                                <p class="text-muted">Upload your first image to get started!</p>
+                                <a href="/analyze" class="btn btn-analyze">
+                                    <i class="fas fa-upload me-2"></i>Upload an Image
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for viewing analysis details -->
+    <div class="modal fade" id="analysisModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Analysis Results</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="analysisContent">
+                    Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function viewAnalysis(id) {
+            // Show modal with loading text
+            const modal = new bootstrap.Modal(document.getElementById('analysisModal'));
+            document.getElementById('analysisContent').innerHTML = '<div class="text-center"><div class="spinner-border text-primary"></div><p class="mt-2">Loading analysis...</p></div>';
+            modal.show();
+            
+            // Fetch the analysis data
+            fetch(`/api/history/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '<div class="row">';
+                    
+                    // Add image
+                    html += `<div class="col-md-6">
+                                <img src="${data.image_path}" class="img-fluid rounded mb-3">
+                            </div>`;
+                    
+                    // Add face detection info
+                    html += `<div class="col-md-6">
+                                <h5>Face Detection</h5>
+                                <p>Faces found: ${data.face_detection.faces_detected}</p>
+                                <p>${data.face_detection.message || ''}</p>
+                            </div>`;
+                    
+                    // Add image quality info
+                    if (data.image_analysis && data.image_analysis.image_quality) {
+                        html += `<div class="col-md-12 mt-3">
+                                    <h5>Image Quality</h5>
+                                    <p>Quality Score: ${Math.round(data.image_analysis.image_quality.quality_score)}%</p>
+                                    <p>Status: ${data.image_analysis.image_quality.status || 'Analyzed'}</p>
+                                </div>`;
+                    }
+                    
+                    // Add composition info
+                    if (data.image_analysis && data.image_analysis.composition) {
+                        html += `<div class="col-md-12 mt-3">
+                                    <h5>Composition</h5>
+                                    <p>Orientation: ${data.image_analysis.composition.orientation_desc || 'Unknown'}</p>
+                                    <p>Aspect Ratio: ${data.image_analysis.composition.aspect_ratio || 'N/A'}</p>
+                                    <p>${data.image_analysis.composition.composition_tip || ''}</p>
+                                </div>`;
+                    }
+                    
+                    html += '</div>';
+                    document.getElementById('analysisContent').innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('analysisContent').innerHTML = '<div class="alert alert-danger">Error loading analysis details</div>';
+                });
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
