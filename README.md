@@ -291,4 +291,8 @@ If you like this project:
 
 ### Made with ❤️ using Python, Flask & OpenCV
 
+<<<<<<< HEAD
 </div>
+=======
+</div>
+>>>>>>> 7b5f6abb12cf4c73828fcd9b2226a153cd652cc2
